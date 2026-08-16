@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FilaCerta - Administração</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <header class="topo">
+        <div>
+            <h1>FilaCerta</h1>
+            <p>Painel administrativo</p>
+        </div>
+
+        <div class="data-atual">
+            <strong id="dataHoje"></strong>
+            <span id="ultimaAtualizacao">Aguardando atualização...</span>
+        </div>
+    </header>
+
+    <main class="conteudo">
+        <!-- Resumo rápido do que está acontecendo no supermercado -->
+        <section class="resumo">
+            <article class="card">
+                <span>Caixas cadastrados</span>
+                <strong id="totalCaixas">0</strong>
+            </article>
+
+            <article class="card">
+                <span>Caixas abertos</span>
+                <strong id="caixasAbertos">0</strong>
+            </article>
+
+            <article class="card">
+                <span>Pessoas nas filas</span>
+                <strong id="totalPessoas">0</strong>
+            </article>
+
+            <article class="card">
+                <span>Menor espera</span>
+                <strong id="menorEspera">--</strong>
+            </article>
+        </section>
+
+        <!-- Tudo foi colocado na mesma tela para o painel continuar simples -->
+        <section class="painel-grid">
+            <div class="bloco">
+                <div class="titulo-bloco">
+                    <div>
+                        <h2>Caixas</h2>
+                        <p>Cadastre e acompanhe os caixas do supermercado.</p>
+                    </div>
+                    <button id="btnNovoCaixa" class="botao">Novo caixa</button>
+                </div>
+
+                <form id="formCaixa" class="form-caixa escondido">
+                    <input type="hidden" id="caixaId">
+
+                    <label>
+                        Nome do caixa
+                        <input type="text" id="caixaNome" placeholder="Ex.: Caixa 01" required>
+                    </label>
+
+                    <label>
+                        Situação inicial
+                        <select id="caixaAberto">
+                            <option value="true">Aberto</option>
+                            <option value="false">Fechado</option>
+                        </select>
+                    </label>
+
+                    <div class="acoes-form">
+                        <button type="submit" class="botao">Salvar</button>
+                        <button type="button" id="btnCancelar" class="botao secundario">Cancelar</button>
+                    </div>
+                </form>
+
+                <div class="tabela-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Caixa</th>
+                                <th>Status</th>
+                                <th>Pessoas</th>
+                                <th>Produtos</th>
+                                <th>Espera</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaCaixas"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bloco">
+                <div class="titulo-bloco">
+                    <div>
+                        <h2>Relatório do dia</h2>
+                        <p>Resumo calculado com as leituras recebidas hoje.</p>
+                    </div>
+                </div>
+
+                <div id="relatorioHoje" class="relatorio">
+                    <p>Nenhum dado registrado hoje.</p>
+                </div>
+
+                <button id="btnFecharDia" class="botao destaque">
+                    Fechar dia e gerar relatório
+                </button>
+
+                <p class="aviso">
+                    O fechamento salva um arquivo JSON separado para o dia atual.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <div id="mensagem" class="mensagem escondido"></div>
+
+    <script src="assets/app.js"></script>
+</body>
+</html>

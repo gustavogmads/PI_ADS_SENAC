@@ -1,0 +1,11 @@
+[
+    {
+        "id": 1,
+        "nome": "caixa 01",
+        "aberto": true,
+        "pessoas": 0,
+        "produtos": 0,
+        "tempoEstimado": 0,
+        "atualizadoEm": null
+    }
+]
