@@ -3,11 +3,6 @@ const areaRecomendacao = document.getElementById("recomendacaoConteudo");
 const quantidadeCaixas = document.getElementById("quantidadeCaixas");
 const ultimaAtualizacao = document.getElementById("ultimaAtualizacao");
 
-// Estes limites servem apenas para a sinalização visual.
-// Podem ser alterados depois sem mexer no restante da tela.
-const LIMITE_VERDE = 5;
-const LIMITE_AMARELO = 10;
-
 // Busca os dados do mesmo backend utilizado pelo painel administrativo.
 async function carregarFilas() {
     try {
@@ -45,6 +40,31 @@ async function carregarFilas() {
     }
 }
 
+// Ordena os caixas do menor para o maior tempo.
+// Em caso de empate, usa produtos e pessoas como desempate.
+function ordenarCaixas(caixas) {
+    return [...caixas].sort((a, b) => {
+        const tempoA = Number(a.tempoEstimado || 0);
+        const tempoB = Number(b.tempoEstimado || 0);
+
+        if (tempoA === 0 && tempoB > 0) return 1;
+        if (tempoB === 0 && tempoA > 0) return -1;
+
+        if (tempoA !== tempoB) {
+            return tempoA - tempoB;
+        }
+
+        const produtosA = Number(a.produtos || 0);
+        const produtosB = Number(b.produtos || 0);
+
+        if (produtosA !== produtosB) {
+            return produtosA - produtosB;
+        }
+
+        return Number(a.pessoas || 0) - Number(b.pessoas || 0);
+    });
+}
+
 function montarLista(caixas) {
     quantidadeCaixas.textContent = caixas.length;
     listaCaixas.innerHTML = "";
@@ -55,30 +75,25 @@ function montarLista(caixas) {
         return;
     }
 
-    // Mostra primeiro os caixas com menor tempo conhecido.
-    caixas.sort((a, b) => {
-        const tempoA = Number(a.tempoEstimado || 0);
-        const tempoB = Number(b.tempoEstimado || 0);
+    const ordenados = ordenarCaixas(caixas);
+    const comTempo = ordenados.filter((caixa) => Number(caixa.tempoEstimado || 0) > 0);
 
-        if (tempoA === 0 && tempoB > 0) return 1;
-        if (tempoB === 0 && tempoA > 0) return -1;
-
-        return tempoA - tempoB;
-    });
-
-    caixas.forEach((caixa) => {
+    ordenados.forEach((caixa) => {
         const tempo = Number(caixa.tempoEstimado || 0);
-        const classe = classeTempo(tempo);
+        const posicao = comTempo.findIndex((item) => item.id === caixa.id);
+        const situacao = definirSituacao(posicao, comTempo.length, tempo);
 
         const card = document.createElement("article");
-        card.className = "caixa";
+        card.className = `caixa caixa-${situacao.classe}`;
 
         card.innerHTML = `
             <div class="caixa-topo">
-                <h3>
-                    <span class="indicador ${classe}"></span>
-                    ${escaparHTML(caixa.nome)}
-                </h3>
+                <div>
+                    <h3>${escaparHTML(caixa.nome)}</h3>
+                    <span class="etiqueta ${situacao.classe}">
+                        ${situacao.texto}
+                    </span>
+                </div>
 
                 <span class="tempo">
                     ${tempo > 0 ? `${tempo} min` : "Aguardando"}
@@ -96,7 +111,6 @@ function montarLista(caixas) {
 }
 
 function montarRecomendacao(caixas) {
-    // Para recomendar, precisamos de pelo menos um caixa com tempo válido.
     const validos = caixas.filter((caixa) => Number(caixa.tempoEstimado || 0) > 0);
 
     if (validos.length === 0) {
@@ -107,29 +121,11 @@ function montarRecomendacao(caixas) {
         return;
     }
 
-    // Primeiro considera o tempo.
-    // Em caso de empate, usa menos produtos e depois menos pessoas.
-    validos.sort((a, b) => {
-        const diferencaTempo =
-            Number(a.tempoEstimado) - Number(b.tempoEstimado);
-
-        if (diferencaTempo !== 0) {
-            return diferencaTempo;
-        }
-
-        const diferencaProdutos =
-            Number(a.produtos || 0) - Number(b.produtos || 0);
-
-        if (diferencaProdutos !== 0) {
-            return diferencaProdutos;
-        }
-
-        return Number(a.pessoas || 0) - Number(b.pessoas || 0);
-    });
-
-    const melhor = validos[0];
+    const melhor = ordenarCaixas(validos)[0];
 
     areaRecomendacao.innerHTML = `
+        <span class="etiqueta verde">Melhor opção</span>
+
         <h2>${escaparHTML(melhor.nome)}</h2>
 
         <span class="tempo-principal">
@@ -145,20 +141,34 @@ function montarRecomendacao(caixas) {
     `;
 }
 
-function classeTempo(tempo) {
-    if (!tempo) {
-        return "neutro";
+// A cor agora mostra a posição do caixa em relação aos outros.
+// Primeiro = verde, último = vermelho e os demais = amarelo.
+function definirSituacao(posicao, quantidade, tempo) {
+    if (!tempo || posicao === -1) {
+        return {
+            classe: "neutro",
+            texto: "Aguardando dados"
+        };
     }
 
-    if (tempo <= LIMITE_VERDE) {
-        return "verde";
+    if (quantidade === 1 || posicao === 0) {
+        return {
+            classe: "verde",
+            texto: "Melhor opção"
+        };
     }
 
-    if (tempo <= LIMITE_AMARELO) {
-        return "amarelo";
+    if (posicao === quantidade - 1) {
+        return {
+            classe: "vermelho",
+            texto: "Maior espera"
+        };
     }
 
-    return "vermelho";
+    return {
+        classe: "amarelo",
+        texto: "Espera intermediária"
+    };
 }
 
 // Evita interpretar nomes cadastrados como código HTML.
@@ -168,6 +178,5 @@ function escaparHTML(texto) {
     return div.innerHTML;
 }
 
-// Faz a primeira leitura e depois consulta novamente a cada 5 segundos.
 carregarFilas();
 setInterval(carregarFilas, 5000);
