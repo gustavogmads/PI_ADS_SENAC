@@ -22,7 +22,7 @@ filacerta-admin/
 Se estiver utilizando XAMPP, a pasta pode ficar em:
 
 ```text
-C:\xampp\htdocs\filacerta\admin\
+C:\xampp\htdocs\filacerta-admin\
 ```
 
 ## Como acessar
@@ -30,7 +30,7 @@ C:\xampp\htdocs\filacerta\admin\
 Com o Apache iniciado, abra no navegador:
 
 ```text
-http://localhost/filacerta/admin/simular-sensor.html
+http://localhost/filacerta-admin/simular-sensor.html
 ```
 
 ## Antes de utilizar
@@ -40,7 +40,7 @@ http://localhost/filacerta/admin/simular-sensor.html
 Acesse:
 
 ```text
-http://localhost/filacerta/admin/
+http://localhost/filacerta-admin/
 ```
 
 Clique em **Novo caixa** e faça o cadastro.
@@ -152,4 +152,3 @@ Ao final do dia, o botão **Fechar dia e gerar relatório** cria o arquivo de re
 O simulador existe apenas para testes e desenvolvimento.
 
 Quando os sensores reais forem integrados, o arquivo poderá ser removido sem alterar o funcionamento principal do sistema, pois os sensores utilizarão o mesmo endpoint de atualização.
-

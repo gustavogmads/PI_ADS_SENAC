@@ -143,3 +143,53 @@ A próxima parte natural é definir:
 2. como os sensores vão identificar cada caixa;
 3. autenticação simples do painel administrativo;
 4. relatório visual ou exportação em PDF, se for necessário.
+
+## Relatório por caixa
+
+A versão 2 separa o relatório em duas partes:
+
+- `geral`: resultado de todas as leituras recebidas no dia;
+- `caixas`: resultado individual de cada caixa.
+
+Cada caixa apresenta:
+
+- total de leituras;
+- média de pessoas;
+- média de produtos;
+- média do tempo de espera;
+- maior fila;
+- maior quantidade de produtos;
+- maior tempo de espera.
+
+Exemplo simplificado:
+
+```json
+{
+  "data": "2026-08-16",
+  "fechadoEm": "2026-08-16T18:00:00-03:00",
+  "geral": {
+    "totalLeituras": 10,
+    "mediaPessoas": 4.2,
+    "mediaProdutos": 28.5,
+    "mediaTempo": 6.1,
+    "maiorFila": 9,
+    "maiorProdutos": 60,
+    "maiorTempo": 14
+  },
+  "caixas": [
+    {
+      "caixaId": 1,
+      "nome": "Caixa 01",
+      "totalLeituras": 5,
+      "mediaPessoas": 3.4,
+      "mediaProdutos": 22.8,
+      "mediaTempo": 4.8,
+      "maiorFila": 6,
+      "maiorProdutos": 42,
+      "maiorTempo": 8
+    }
+  ]
+}
+```
+
+O arquivo diário continua armazenando apenas somas e valores máximos. As leituras individuais não são salvas.

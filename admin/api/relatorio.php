@@ -20,10 +20,15 @@ if (empty($dia) || empty($dia['totalLeituras'])) {
 
 $relatorio = resumirDia($dia);
 
-// Guardamos também quando o relatório foi fechado.
-$relatorio['fechadoEm'] = date('c');
+// A data de fechamento fica no início para facilitar a leitura do arquivo.
+$relatorioFinal = [
+    'data' => $relatorio['data'],
+    'fechadoEm' => date('c'),
+    'geral' => $relatorio['geral'],
+    'caixas' => $relatorio['caixas']
+];
 
-if (!salvarJson(arquivoRelatorio(), $relatorio)) {
+if (!salvarJson(arquivoRelatorio(), $relatorioFinal)) {
     responder([
         'ok' => false,
         'mensagem' => 'Não foi possível salvar o relatório.'
@@ -33,5 +38,5 @@ if (!salvarJson(arquivoRelatorio(), $relatorio)) {
 responder([
     'ok' => true,
     'mensagem' => 'Relatório do dia gerado.',
-    'relatorio' => $relatorio
+    'relatorio' => $relatorioFinal
 ]);

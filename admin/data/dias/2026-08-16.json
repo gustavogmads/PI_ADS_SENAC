@@ -1,0 +1,49 @@
+{
+    "data": "2026-08-16",
+    "totalLeituras": 4,
+    "somaPessoas": 23,
+    "somaProdutos": 81,
+    "somaTempo": 13,
+    "maiorFila": 11,
+    "maiorProdutos": 22,
+    "maiorTempo": 4,
+    "caixas": {
+        "1": {
+            "caixaId": 1,
+            "nome": "Caixa 01",
+            "totalLeituras": 2,
+            "somaPessoas": 11,
+            "somaProdutos": 44,
+            "somaTempo": 8,
+            "maiorFila": 8,
+            "maiorProdutos": 22,
+            "maiorTempo": 4,
+            "ultimaLeitura": "2026-08-16T16:42:30+02:00"
+        },
+        "2": {
+            "caixaId": 2,
+            "nome": "Gislaine",
+            "totalLeituras": 1,
+            "somaPessoas": 11,
+            "somaProdutos": 22,
+            "somaTempo": 4,
+            "maiorFila": 11,
+            "maiorProdutos": 22,
+            "maiorTempo": 4,
+            "ultimaLeitura": "2026-08-16T16:42:25+02:00"
+        },
+        "3": {
+            "caixaId": 3,
+            "nome": "Caixa 3",
+            "totalLeituras": 1,
+            "somaPessoas": 1,
+            "somaProdutos": 15,
+            "somaTempo": 1,
+            "maiorFila": 1,
+            "maiorProdutos": 15,
+            "maiorTempo": 1,
+            "ultimaLeitura": "2026-08-16T16:51:02+02:00"
+        }
+    },
+    "ultimaLeitura": "2026-08-16T16:51:02+02:00"
+}

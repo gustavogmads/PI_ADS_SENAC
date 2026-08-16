@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>FilaCerta</title>
+
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topo">
+    <div>
+        <h1>FilaCerta</h1>
+        <p>Veja qual caixa tende a ter a menor espera.</p>
+    </div>
+
+    <span id="ultimaAtualizacao" class="atualizacao">
+        Carregando...
+    </span>
+</header>
+
+<main class="conteudo">
+
+    <!-- A recomendação aparece primeiro porque é a principal informação para o cliente. -->
+    <section id="areaRecomendacao" class="recomendacao">
+        <span class="rotulo">Melhor opção agora</span>
+
+        <div id="recomendacaoConteudo">
+            <p>Buscando os caixas disponíveis...</p>
+        </div>
+    </section>
+
+    <!-- Lista com todos os caixas que estão abertos. -->
+    <section class="lista">
+        <div class="titulo-secao">
+            <div>
+                <h2>Caixas disponíveis</h2>
+                <p>Os dados são atualizados automaticamente.</p>
+            </div>
+
+            <span id="quantidadeCaixas" class="contador">0</span>
+        </div>
+
+        <div id="listaCaixas" class="caixas">
+            <p class="mensagem-lista">Carregando...</p>
+        </div>
+    </section>
+
+    <p class="rodape">
+        Os tempos são estimativas e podem mudar conforme o atendimento.
+    </p>
+
+</main>
+
+<script src="assets/app.js"></script>
+
+</body>
+</html>

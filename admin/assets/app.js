@@ -138,37 +138,93 @@ function montarResumo() {
 }
 
 function montarRelatorio(relatorio) {
-    if (!relatorio || !relatorio.totalLeituras) {
+    if (!relatorio || !relatorio.geral || !relatorio.geral.totalLeituras) {
         relatorioHoje.innerHTML = "<p>Nenhum dado registrado hoje.</p>";
         return;
     }
 
-    relatorioHoje.innerHTML = `
+    const geral = relatorio.geral;
+
+    let html = `
+        <h3 class="subtitulo-relatorio">Resultado geral</h3>
+
         <div class="item-relatorio">
             <span>Leituras recebidas</span>
-            <strong>${relatorio.totalLeituras}</strong>
+            <strong>${geral.totalLeituras}</strong>
         </div>
         <div class="item-relatorio">
-            <span>Média de pessoas por leitura</span>
-            <strong>${relatorio.mediaPessoas}</strong>
+            <span>Total de pessoas registradas</span>
+            <strong>${geral.totalPessoas}</strong>
         </div>
         <div class="item-relatorio">
-            <span>Média de produtos por leitura</span>
-            <strong>${relatorio.mediaProdutos}</strong>
+            <span>Total de produtos registrados</span>
+            <strong>${geral.totalProdutos}</strong>
         </div>
         <div class="item-relatorio">
             <span>Espera média</span>
-            <strong>${relatorio.mediaTempo} min</strong>
+            <strong>${geral.mediaEspera} min</strong>
         </div>
         <div class="item-relatorio">
             <span>Maior fila registrada</span>
-            <strong>${relatorio.maiorFila} pessoas</strong>
+            <strong>${geral.maiorFila} pessoas</strong>
+        </div>
+        <div class="item-relatorio">
+            <span>Maior quantidade de produtos</span>
+            <strong>${geral.maiorProdutos}</strong>
         </div>
         <div class="item-relatorio">
             <span>Maior espera registrada</span>
-            <strong>${relatorio.maiorTempo} min</strong>
+            <strong>${geral.maiorEspera} min</strong>
         </div>
     `;
+
+    if (relatorio.caixas && relatorio.caixas.length > 0) {
+        html += `
+            <h3 class="subtitulo-relatorio separado">Resultados por caixa</h3>
+            <div class="lista-relatorio-caixas">
+        `;
+
+        relatorio.caixas.forEach((caixa) => {
+            html += `
+                <div class="caixa-relatorio">
+                    <h4>${escaparHTML(caixa.nome)}</h4>
+
+                    <div class="item-relatorio">
+                        <span>Leituras</span>
+                        <strong>${caixa.totalLeituras}</strong>
+                    </div>
+                    <div class="item-relatorio">
+                        <span>Total de pessoas</span>
+                        <strong>${caixa.totalPessoas}</strong>
+                    </div>
+                    <div class="item-relatorio">
+                        <span>Total de produtos</span>
+                        <strong>${caixa.totalProdutos}</strong>
+                    </div>
+                    <div class="item-relatorio">
+                        <span>Espera média</span>
+                        <strong>${caixa.mediaEspera} min</strong>
+                    </div>
+                    <div class="item-relatorio">
+                        <span>Maior fila</span>
+                        <strong>${caixa.maiorFila} pessoas</strong>
+                    </div>
+                    <div class="item-relatorio">
+                        <span>Maior quantidade de produtos</span>
+                        <strong>${caixa.maiorProdutos}</strong>
+                    </div>
+                    <div class="item-relatorio">
+                        <span>Maior espera</span>
+                        <strong>${caixa.maiorEspera} min</strong>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += "</div>";
+    }
+
+    relatorioHoje.innerHTML = html;
 }
 
 function editarCaixa(id) {

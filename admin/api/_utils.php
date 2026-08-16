@@ -85,30 +85,54 @@ function arquivoRelatorio($data = null)
     return pastaDados() . '/relatorios/' . $data . '.json';
 }
 
-// Calcula as médias sem precisar guardar todas as leituras do dia.
-function resumirDia($dia)
+// Monta os números usados no relatório.
+// Pessoas e produtos são mostrados como total.
+// O tempo de espera continua sendo uma média das leituras.
+function resumirAcumulado($dados)
 {
-    $leituras = (int)($dia['totalLeituras'] ?? 0);
+    $leituras = (int)($dados['totalLeituras'] ?? 0);
 
     if ($leituras === 0) {
         return [
-            'data' => $dia['data'] ?? date('Y-m-d'),
             'totalLeituras' => 0,
-            'mediaPessoas' => 0,
-            'mediaProdutos' => 0,
-            'mediaTempo' => 0,
+            'totalPessoas' => 0,
+            'totalProdutos' => 0,
+            'mediaEspera' => 0,
             'maiorFila' => 0,
-            'maiorTempo' => 0
+            'maiorProdutos' => 0,
+            'maiorEspera' => 0
         ];
     }
 
     return [
-        'data' => $dia['data'] ?? date('Y-m-d'),
         'totalLeituras' => $leituras,
-        'mediaPessoas' => round(($dia['somaPessoas'] ?? 0) / $leituras, 1),
-        'mediaProdutos' => round(($dia['somaProdutos'] ?? 0) / $leituras, 1),
-        'mediaTempo' => round(($dia['somaTempo'] ?? 0) / $leituras, 1),
-        'maiorFila' => (int)($dia['maiorFila'] ?? 0),
-        'maiorTempo' => (int)($dia['maiorTempo'] ?? 0)
+        'totalPessoas' => (int)($dados['somaPessoas'] ?? 0),
+        'totalProdutos' => (int)($dados['somaProdutos'] ?? 0),
+        'mediaEspera' => round(($dados['somaTempo'] ?? 0) / $leituras, 1),
+        'maiorFila' => (int)($dados['maiorFila'] ?? 0),
+        'maiorProdutos' => (int)($dados['maiorProdutos'] ?? 0),
+        'maiorEspera' => (int)($dados['maiorTempo'] ?? 0)
     ];
+}
+
+// Monta o relatório geral e os resultados separados por caixa.
+function resumirDia($dia)
+{
+    $relatorio = [
+        'data' => $dia['data'] ?? date('Y-m-d'),
+        'geral' => resumirAcumulado($dia),
+        'caixas' => []
+    ];
+
+    foreach (($dia['caixas'] ?? []) as $caixa) {
+        $resultado = resumirAcumulado($caixa);
+
+        $resultado['caixaId'] = (int)($caixa['caixaId'] ?? 0);
+        $resultado['nome'] = $caixa['nome'] ?? 'Caixa';
+        $resultado['ultimaLeitura'] = $caixa['ultimaLeitura'] ?? null;
+
+        $relatorio['caixas'][] = $resultado;
+    }
+
+    return $relatorio;
 }

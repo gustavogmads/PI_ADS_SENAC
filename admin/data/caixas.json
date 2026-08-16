@@ -1,11 +1,29 @@
 [
     {
         "id": 1,
-        "nome": "caixa 01",
+        "nome": "Caixa 01",
         "aberto": true,
-        "pessoas": 0,
-        "produtos": 0,
-        "tempoEstimado": 0,
-        "atualizadoEm": null
+        "pessoas": 8,
+        "produtos": 22,
+        "tempoEstimado": 4,
+        "atualizadoEm": "2026-08-16T16:42:30+02:00"
+    },
+    {
+        "id": 2,
+        "nome": "Gislaine",
+        "aberto": true,
+        "pessoas": 11,
+        "produtos": 22,
+        "tempoEstimado": 4,
+        "atualizadoEm": "2026-08-16T16:42:25+02:00"
+    },
+    {
+        "id": 3,
+        "nome": "Caixa 3",
+        "aberto": true,
+        "pessoas": 1,
+        "produtos": 15,
+        "tempoEstimado": 1,
+        "atualizadoEm": "2026-08-16T16:51:02+02:00"
     }
 ]
