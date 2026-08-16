@@ -77,6 +77,31 @@
             cursor: not-allowed;
         }
 
+        .tempo {
+            margin-top: 20px;
+            padding: 16px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #f7f7f7;
+        }
+
+        .tempo span {
+            display: block;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .tempo strong {
+            display: block;
+            margin-top: 4px;
+            font-size: 28px;
+        }
+
+        .explicacao {
+            margin-top: 8px;
+            font-size: 12px;
+        }
+
         .mensagem {
             margin-top: 18px;
             padding: 12px;
@@ -104,9 +129,10 @@
 <main>
     <div class="bloco">
         <h1>Simular sensor</h1>
+
         <p>
-            Use esta tela para enviar uma leitura como se ela tivesse vindo
-            de um sensor instalado em um caixa.
+            Informe apenas a quantidade de pessoas e produtos.
+            O tempo de espera será calculado automaticamente pelo sistema.
         </p>
 
         <form id="formSensor">
@@ -125,10 +151,14 @@
                 <input type="number" id="produtos" min="0" value="22" required>
             </label>
 
-            <label>
-                Tempo estimado de espera
-                <input type="number" id="tempoEstimado" min="0" value="4" required>
-            </label>
+            <div class="tempo">
+                <span>Tempo estimado</span>
+                <strong id="tempoPrevisto">4 min</strong>
+
+                <p class="explicacao">
+                    A previsão considera a quantidade de pessoas e de produtos da fila.
+                </p>
+            </div>
 
             <button type="submit" id="btnEnviar">Enviar leitura</button>
         </form>
@@ -144,11 +174,11 @@
     const caixaId = document.getElementById("caixaId");
     const pessoas = document.getElementById("pessoas");
     const produtos = document.getElementById("produtos");
-    const tempoEstimado = document.getElementById("tempoEstimado");
+    const tempoPrevisto = document.getElementById("tempoPrevisto");
     const btnEnviar = document.getElementById("btnEnviar");
     const mensagem = document.getElementById("mensagem");
 
-    // Carrega os caixas cadastrados no painel administrativo.
+    // Carrega os caixas cadastrados no painel.
     async function carregarCaixas() {
         try {
             const resposta = await fetch("api/dados.php", {
@@ -163,7 +193,7 @@
             if (caixas.length === 0) {
                 caixaId.innerHTML = '<option value="">Nenhum caixa cadastrado</option>';
                 btnEnviar.disabled = true;
-                mostrarMensagem("Cadastre pelo menos um caixa no painel antes de simular.", false);
+                mostrarMensagem("Cadastre pelo menos um caixa antes de simular.", false);
                 return;
             }
 
@@ -183,15 +213,35 @@
         }
     }
 
-    // Envia os valores para o mesmo endereço que será usado pelo sensor real.
+    // Esta prévia usa a mesma fórmula do PHP.
+    // O valor final sempre é confirmado pelo servidor no envio.
+    function calcularPrevia() {
+        const quantidadePessoas = Math.max(0, Number(pessoas.value || 0));
+        const quantidadeProdutos = Math.max(0, Number(produtos.value || 0));
+
+        if (quantidadePessoas === 0 && quantidadeProdutos === 0) {
+            tempoPrevisto.textContent = "0 min";
+            return;
+        }
+
+        const tempo =
+            (quantidadePessoas * 0.6) +
+            (quantidadeProdutos * 0.08);
+
+        tempoPrevisto.textContent = `${Math.ceil(tempo)} min`;
+    }
+
+    pessoas.addEventListener("input", calcularPrevia);
+    produtos.addEventListener("input", calcularPrevia);
+
+    // O simulador envia somente os dados que um sensor precisaria informar.
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         const leitura = {
             caixaId: Number(caixaId.value),
             pessoas: Number(pessoas.value),
-            produtos: Number(produtos.value),
-            tempoEstimado: Number(tempoEstimado.value)
+            produtos: Number(produtos.value)
         };
 
         try {
@@ -206,14 +256,18 @@
             const dados = await resposta.json();
 
             if (!resposta.ok || !dados.ok) {
-                mostrarMensagem(dados.mensagem || "Não foi possível enviar a leitura.", false);
+                mostrarMensagem(
+                    dados.mensagem || "Não foi possível enviar a leitura.",
+                    false
+                );
                 return;
             }
 
+            tempoPrevisto.textContent = `${dados.tempoEstimado} min`;
+
             mostrarMensagem(
-                `Leitura enviada. Caixa ${leitura.caixaId}: ` +
-                `${leitura.pessoas} pessoas, ${leitura.produtos} produtos e ` +
-                `${leitura.tempoEstimado} min de espera.`,
+                `${dados.pessoas} pessoas, ${dados.produtos} produtos e ` +
+                `${dados.tempoEstimado} min de espera calculados para o caixa.`,
                 true
             );
         } catch (erro) {
@@ -228,6 +282,7 @@
     }
 
     carregarCaixas();
+    calcularPrevia();
 </script>
 
 </body>

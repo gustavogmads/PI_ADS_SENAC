@@ -1,154 +1,125 @@
 # Simulador de Sensor
 
-O arquivo `simular-sensor.html` foi criado para facilitar os testes do FilaCerta enquanto os sensores físicos ainda não estão integrados ao sistema.
+O arquivo `simular-sensor.html` permite testar o FilaCerta sem utilizar um sensor físico.
 
-Ele simula o envio de uma leitura para um caixa cadastrado, utilizando o mesmo endereço que será usado futuramente pelos sensores reais.
+Nesta versão, o simulador não pede mais o tempo de espera.
 
-## Onde colocar o arquivo
+O usuário informa apenas:
 
-Coloque o arquivo `simular-sensor.html` na pasta principal do projeto.
+- caixa;
+- quantidade de pessoas;
+- quantidade de produtos.
 
-Exemplo:
-
-```text
-filacerta-admin/
-├── index.html
-├── simular-sensor.html
-├── assets/
-├── api/
-└── data/
-```
-
-Se estiver utilizando XAMPP, a pasta pode ficar em:
-
-```text
-C:\xampp\htdocs\filacerta-admin\
-```
+O tempo é calculado automaticamente.
 
 ## Como acessar
 
-Com o Apache iniciado, abra no navegador:
+Com o projeto no XAMPP e o Apache iniciado:
 
 ```text
 http://localhost/filacerta-admin/simular-sensor.html
 ```
 
-## Antes de utilizar
+## Como testar
 
-É necessário ter pelo menos um caixa cadastrado no painel administrativo.
+Primeiro cadastre pelo menos um caixa no painel administrativo.
 
-Acesse:
-
-```text
-http://localhost/filacerta-admin/
-```
-
-Clique em **Novo caixa** e faça o cadastro.
-
-Depois volte ao simulador.
-
-## Como fazer uma simulação
-
-Na tela do simulador:
-
-1. Selecione o caixa que receberá a leitura.
-2. Informe a quantidade de pessoas na fila.
-3. Informe a quantidade aproximada de produtos.
-4. Informe o tempo estimado de espera em minutos.
-5. Clique em **Enviar leitura**.
-
-Exemplo:
+Depois abra o simulador e informe, por exemplo:
 
 ```text
 Caixa: Caixa 01
 Pessoas: 3
 Produtos: 22
+```
+
+Enquanto os valores são digitados, a tela já mostra uma previsão do tempo.
+
+Ao clicar em **Enviar leitura**, o PHP calcula novamente o tempo e salva o resultado.
+
+## Fórmula atual
+
+A primeira versão utiliza uma fórmula simples:
+
+```text
+tempo = (pessoas × 0,6) + (produtos × 0,08)
+```
+
+O resultado é arredondado para cima.
+
+Exemplo:
+
+```text
+3 pessoas
+22 produtos
+
+(3 × 0,6) + (22 × 0,08)
+1,8 + 1,76
+3,56
+
 Tempo estimado: 4 minutos
 ```
 
-Depois do envio, o sistema deverá informar que a leitura foi registrada.
+Os valores são apenas parâmetros iniciais do protótipo.
 
-## O que acontece quando a leitura é enviada
+Depois, eles podem ser ajustados usando dados reais de atendimento do supermercado.
 
-O simulador envia os dados para:
+## Onde a fórmula fica
+
+O cálculo principal está em:
 
 ```text
-api/atualizar-fila.php
+api/_utils.php
 ```
 
-O PHP atualiza o estado atual do caixa no arquivo:
+Na função:
 
 ```text
-data/caixas.json
+calcularTempoEstimado()
 ```
 
-A leitura também é considerada no resumo utilizado para gerar o relatório do dia.
+O simulador possui a mesma conta apenas para mostrar uma prévia antes do envio.
 
-O painel administrativo é atualizado automaticamente, então os novos valores aparecerão sem a necessidade de alterar o JSON manualmente.
+O valor usado pelo sistema é sempre o calculado pelo PHP.
 
-## Fluxo do simulador
+## O que o simulador envia
+
+Agora o envio é mais simples:
+
+```json
+{
+  "caixaId": 1,
+  "pessoas": 3,
+  "produtos": 22
+}
+```
+
+O servidor responde com:
+
+```json
+{
+  "ok": true,
+  "mensagem": "Fila atualizada.",
+  "caixaId": 1,
+  "pessoas": 3,
+  "produtos": 22,
+  "tempoEstimado": 4
+}
+```
+
+## Fluxo
 
 ```text
+Pessoas + produtos
+       ↓
 Simulador
-    ↓
-api/atualizar-fila.php
-    ↓
+       ↓
+atualizar-fila.php
+       ↓
+calcularTempoEstimado()
+       ↓
 caixas.json
-    ↓
-Painel administrativo
+       ↓
+Painel e tela do cliente
 ```
 
-O sensor físico deverá utilizar esse mesmo fluxo futuramente.
-
-A principal diferença será apenas a origem dos dados.
-
-```text
-Hoje:
-Simulador → PHP → JSON
-
-Futuramente:
-Sensor físico → PHP → JSON
-```
-
-## Exemplo de teste
-
-Cadastre o `Caixa 01` e envie:
-
-```text
-Pessoas: 5
-Produtos: 36
-Tempo estimado: 7
-```
-
-Ao voltar ao painel administrativo, o caixa deverá apresentar aproximadamente:
-
-```text
-Caixa 01
-Aberto
-5 pessoas
-36 produtos
-7 min
-```
-
-## Relatório do dia
-
-Cada leitura enviada pelo simulador também atualiza os dados usados no relatório diário.
-
-O sistema acumula informações como:
-
-- quantidade de leituras recebidas;
-- média de pessoas;
-- média de produtos;
-- média do tempo de espera;
-- maior fila registrada;
-- maior tempo de espera registrado.
-
-Esses dados podem ser visualizados no painel administrativo.
-
-Ao final do dia, o botão **Fechar dia e gerar relatório** cria o arquivo de relatório correspondente à data atual.
-
-## Importante
-
-O simulador existe apenas para testes e desenvolvimento.
-
-Quando os sensores reais forem integrados, o arquivo poderá ser removido sem alterar o funcionamento principal do sistema, pois os sensores utilizarão o mesmo endpoint de atualização.
+Quando o sensor físico for integrado, ele também poderá enviar apenas a quantidade de pessoas e produtos.

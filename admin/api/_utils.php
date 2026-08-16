@@ -85,6 +85,30 @@ function arquivoRelatorio($data = null)
     return pastaDados() . '/relatorios/' . $data . '.json';
 }
 
+
+// Calcula o tempo estimado usando pessoas e produtos.
+// Os valores são simples para facilitar os testes e podem ser ajustados depois.
+function calcularTempoEstimado($pessoas, $produtos)
+{
+    $pessoas = max(0, (int)$pessoas);
+    $produtos = max(0, (int)$produtos);
+
+    if ($pessoas === 0 && $produtos === 0) {
+        return 0;
+    }
+
+    // Cada pessoa acrescenta aproximadamente 36 segundos.
+    $tempoPorPessoa = 0.6;
+
+    // Cada produto acrescenta aproximadamente 4,8 segundos.
+    $tempoPorProduto = 0.08;
+
+    $tempo = ($pessoas * $tempoPorPessoa) + ($produtos * $tempoPorProduto);
+
+    // Arredonda para cima para trabalhar com minutos inteiros.
+    return (int)ceil($tempo);
+}
+
 // Monta os números usados no relatório.
 // Pessoas e produtos são mostrados como total.
 // O tempo de espera continua sendo uma média das leituras.

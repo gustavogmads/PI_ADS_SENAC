@@ -8,8 +8,9 @@ $id = (int)($entrada['caixaId'] ?? 0);
 $pessoas = max(0, (int)($entrada['pessoas'] ?? 0));
 $produtos = max(0, (int)($entrada['produtos'] ?? 0));
 
-// Nesta versão, o tempo ainda pode vir pronto pelo simulador ou sensor.
-$tempo = max(0, (int)($entrada['tempoEstimado'] ?? 0));
+// O sensor informa apenas pessoas e produtos.
+// O próprio sistema calcula o tempo estimado.
+$tempo = calcularTempoEstimado($pessoas, $produtos);
 
 $caixas = lerJson(arquivoCaixas(), []);
 $encontrado = false;
@@ -101,5 +102,8 @@ salvarJson(arquivoDia(), $dia);
 responder([
     'ok' => true,
     'mensagem' => 'Fila atualizada.',
-    'caixaId' => $id
+    'caixaId' => $id,
+    'pessoas' => $pessoas,
+    'produtos' => $produtos,
+    'tempoEstimado' => $tempo
 ]);
