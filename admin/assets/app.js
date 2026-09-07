@@ -108,11 +108,11 @@ function montarCaixas() {
             <td>${caixa.produtos ?? 0}</td>
             <td>${caixa.tempoEstimado ?? 0} min</td>
             <td>
-                <button class="acao-link" onclick="editarCaixa(${caixa.id})">Editar</button>
-                <button class="acao-link" onclick="alternarCaixa(${caixa.id})">
+                <button class="acao-link edit" onclick="editarCaixa(${caixa.id})">Editar</button>
+                <button class="acao-link switch" onclick="alternarCaixa(${caixa.id})">
                     ${caixa.aberto ? "Fechar" : "Abrir"}
                 </button>
-                <button class="acao-link" onclick="excluirCaixa(${caixa.id})">Excluir</button>
+                <button class="acao-link delete" onclick="excluirCaixa(${caixa.id})">Excluir</button>
             </td>
         `;
 
